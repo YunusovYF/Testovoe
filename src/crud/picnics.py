@@ -34,6 +34,7 @@ def create_schema(user_picnic):
 
     return picnics
 
+
 def get_all_picnics(db: Session):
     user_picnic = user_picnic_query(db).all()
 
