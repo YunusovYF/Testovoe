@@ -22,13 +22,17 @@ def create_city(city):
     return {'id': city_object.id, 'name': city_object.name, 'weather': city_object.weather}
 
 
-def cities_list(q):
-    if q:
-        cities = Session().query(City).filter(City.name == q).all()
-        if not cities:
-            raise HTTPException(status_code=404, detail=f'Города {q} нет в базе данных')
+def get_all_cities():
+    cities = Session().query(City).all()
+    if not cities:
+        raise HTTPException(status_code=404, detail=f'В базе данных нет записей о городах')
 
-    else:
-        cities = Session().query(City).all()
+    return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
+
+
+def get_cities_by_name(city_name):
+    cities = Session().query(City).filter(City.name == city_name).all()
+    if not cities:
+        raise HTTPException(status_code=404, detail=f'Города {city_name} нет в базе данных')
 
     return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]

@@ -10,14 +10,49 @@ router = APIRouter(
 )
 
 
-@router.get('', summary='Create City', description='Создание города по его названию')
+@router.post('')
 def create_city(city: str = Query(description="Название города", default=None)):
+    """
+    Создание города
+
+    Args:
+    - **city** Город
+
+    Returns:
+    - **id** Порядковый номер города
+    - **name** Имя города
+    - **weather** Температура в городе
+    """
     return cities.create_city(city)
 
 
-@router.post('/get-cities/', summary='Get Cities')
-def cities_list(q: str = Query(description="Название города", default=None)):
+@router.get('')
+def get_all_cities():
     """
-    Получение списка городов
+    Получение города по запросу
+
+    Args:
+
+
+    Returns:
+    - **id** Порядковый номер города
+    - **name** Имя города
+    - **weather** Температура в городе
     """
-    return cities.cities_list(q)
+    return cities.get_all_cities()
+
+
+@router.get('/{city_name}')
+def get_cities_by_name(city_name: str = Query(description="Название города", default=None)):
+    """
+    Получение города по запросу
+
+    Args:
+    - **city_name** Город
+
+    Returns:
+    - **id** Порядковый номер города
+    - **name** Имя города
+    - **weather** Температура в городе
+    """
+    return cities.get_cities_by_name(city_name)
