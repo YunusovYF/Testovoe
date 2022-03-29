@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 
-from src.database.database import SessionLocal
+from sqlalchemy.orm.session import Session
 from src.database.models import User
 from src.schemas.users import UserModel
 
 
-def get_all_users(db: SessionLocal):
+def get_all_users(db: Session):
     users = db.query(User).all()
     if not users:
         raise HTTPException(status_code=404, detail=f'В базе данных нет записей о пользователях')
@@ -17,7 +17,7 @@ def get_all_users(db: SessionLocal):
     } for user in users]
 
 
-def get_users_by_age(age, db: SessionLocal):
+def get_users_by_age(age, db: Session):
     users = db.query(User).filter(User.age == age).all()
     if not users:
         raise HTTPException(status_code=404, detail=f'Пользователей {age} лет нет в базе данных')
@@ -29,7 +29,7 @@ def get_users_by_age(age, db: SessionLocal):
     } for user in users]
 
 
-def create_user(user, db: SessionLocal):
+def create_user(user, db: Session):
     user_object = User(**user.dict())
     db.add(user_object)
     db.commit()
