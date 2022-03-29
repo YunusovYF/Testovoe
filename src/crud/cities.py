@@ -20,6 +20,7 @@ def create_city(city):
 
     return {'id': city_object.id, 'name': city_object.name, 'weather': city_object.weather}
 
+
 def cities_list(q):
     if q:
         cities = Session().query(City).filter(City.name == q).all()
