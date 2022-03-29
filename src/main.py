@@ -10,41 +10,6 @@ app = FastAPI()
 app.include_router(all.router)
 
 
-
-
-
-@app.post('/users-list/', summary='')
-def users_list(age: int = Query(description="Количество лет", default=None)):
-    """
-    Список пользователей
-    """
-    if age:
-        users = Session().query(User).filter(User.age == age).all()
-        if not users:
-            raise HTTPException(status_code=404, detail=f'Пользователей {age} лет нет в базе данных')
-    else:
-        users = Session().query(User).all()
-    return [{
-        'id': user.id,
-        'name': user.name,
-        'surname': user.surname,
-        'age': user.age,
-    } for user in users]
-
-
-@app.post('/register-user/', summary='CreateUser', response_model=UserModel)
-def register_user(user: RegisterUserRequest):
-    """
-    Регистрация пользователя
-    """
-    user_object = User(**user.dict())
-    s = Session()
-    s.add(user_object)
-    s.commit()
-
-    return UserModel.from_orm(user_object)
-
-
 @app.get('/all-picnics/', summary='All Picnics', tags=['picnic'])
 def all_picnics(datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
                 past: bool = Query(default=True, description='Включая уже прошедшие пикники')):
