@@ -8,13 +8,13 @@ from src.routers import all
 from src.database.models import Base
 from src.database.database import engine
 
+app = FastAPI()
+
 if not os.path.isdir('src/logs'):
     os.makedirs('src/logs')
 
 logging.config.fileConfig('src/logging.conf')
 logging.info(f'Конфигурация логов загружена')
-
-app = FastAPI()
 
 
 @app.exception_handler(Exception)
