@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Query
 
 from src.crud import users
-from src.schemas import RegisterUserRequest, UserModel
+from schemas.users import RegisterUserRequest, UserModel
 
 
 router = APIRouter(

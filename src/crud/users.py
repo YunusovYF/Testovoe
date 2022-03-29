@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from src.database.database import Session
 from src.database.models import User
-from src.schemas import UserModel
+from schemas.users import UserModel
 
 
 def user_list(age):
