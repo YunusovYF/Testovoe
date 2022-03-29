@@ -51,7 +51,7 @@ class DbPicnic(Base):
     __tablename__ = 'picnic'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
+    city_id = Column(Integer, ForeignKey('city.id', ondelete='CASCADE'), nullable=False)
     city = relationship('DbCity', back_populates='picnic')
     time = Column(DateTime, nullable=False)
     picnic_registration = relationship('DbPicnicRegistration', back_populates='picnic')
@@ -67,9 +67,9 @@ class DbPicnicRegistration(Base):
     __tablename__ = 'picnic_registration'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = relationship('DbUser', back_populates='picnic_registration')
-    picnic_id = Column(Integer, ForeignKey('picnic.id'), nullable=False)
+    picnic_id = Column(Integer, ForeignKey('picnic.id', ondelete='CASCADE'), nullable=False)
     picnic = relationship('DbPicnic', back_populates='picnic_registration')
 
     def __repr__(self):
