@@ -1,8 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi import Query
+from sqlalchemy.orm.session import Session
 import datetime as dt
 
+from src.database.database import get_db
 from src.crud import picnics
+from src.schemas.picnics import PicnicOutSchema
 
 
 router = APIRouter(
@@ -11,8 +14,8 @@ router = APIRouter(
 )
 
 
-@router.get('', summary='All Picnics')
-def get_all_picnics():
+@router.get('', response_model=PicnicOutSchema)
+def get_all_picnics(db: Session = Depends(get_db)):
     """
     Список всех пикников
 
@@ -28,15 +31,18 @@ def get_all_picnics():
     - **id** Порядковый номер
     - **name** Имя
     - **surname** Фамилия
-    - **age** возвраст
+    - **age** возраст
     """
-    return picnics.get_all_picnics()
+    picnic = picnics.get_all_picnics(db)
+    print(picnic)
+    return picnic
 
 
 @router.get('/{datetime}/{past}', summary='All Picnics')
 def get_picnics_by_date(
         datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
-        past: bool = Query(default=True, description='Включая уже прошедшие пикники')):
+        past: bool = Query(default=True, description='Включая уже прошедшие пикники'),
+        db: Session = Depends(get_db)):
     """
     Список всех пикников
 
@@ -55,11 +61,11 @@ def get_picnics_by_date(
     - **surname** Фамилия
     - **age** возраст
     """
-    return picnics.get_picnics_by_date(datetime, past)
+    return picnics.get_picnics_by_date(datetime, past, db)
 
 
 @router.post('')
-def create_picnic(city_id: int = None, datetime: dt.datetime = None):
+def create_picnic(city_id: int = None, datetime: dt.datetime = None, db: Session = Depends(get_db)):
     """
     Регистрация пикника
 
@@ -72,7 +78,7 @@ def create_picnic(city_id: int = None, datetime: dt.datetime = None):
     - **city** город пикника
     - **time** время проведения
     """
-    return picnics.create_picnic(city_id, datetime)
+    return picnics.create_picnic(city_id, datetime, db)
 
 
 @router.post('/registration')

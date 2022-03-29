@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi import Query
+from sqlalchemy.orm.session import Session
 
+
+from src.database.database import get_db
 from src.crud import users
 from src.schemas.users import RegisterUserRequest, UserModel
 
@@ -12,7 +15,7 @@ router = APIRouter(
 
 
 @router.get('')
-def get_all_users():
+def get_all_users(db: Session = Depends(get_db)):
     """
     Список пользователей
 
@@ -25,11 +28,11 @@ def get_all_users():
     - **surname** Фамилия
     - **age** возраст
     """
-    return users.get_all_users()
+    return users.get_all_users(db)
 
 
 @router.get('/{age}')
-def get_users_by_age(age: int = Query(description="Количество лет", default=None)):
+def get_users_by_age(age: int = Query(description="Количество лет", default=None), db: Session = Depends(get_db)):
     """
     Список пользователей
 
@@ -42,11 +45,11 @@ def get_users_by_age(age: int = Query(description="Количество лет",
     - **surname** Фамилия
     - **age** возраст
     """
-    return users.get_users_by_age(age)
+    return users.get_users_by_age(age, db)
 
 
 @router.post('', response_model=UserModel)
-def create_user(user: RegisterUserRequest):
+def create_user(user: RegisterUserRequest, db: Session = Depends(get_db)):
     """
     Регистрация пользователя
 
@@ -59,4 +62,4 @@ def create_user(user: RegisterUserRequest):
     - **surname** Фамилия
     - **age** возраст
     """
-    return users.create_user(user)
+    return users.create_user(user, db)
