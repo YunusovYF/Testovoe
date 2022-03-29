@@ -5,7 +5,7 @@ from src.external_requests import CityWeather
 from src.database.database import Base
 
 
-class City(Base):
+class DbCity(Base):
     """
     Город
     """
@@ -27,7 +27,7 @@ class City(Base):
         return f'<Город "{self.name}">'
 
 
-class User(Base):
+class DbUser(Base):
     """
     Пользователь
     """
@@ -37,12 +37,13 @@ class User(Base):
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     age = Column(Integer, nullable=True)
+    picnic_registration = relationship('DbPicnicRegistration', back_populates='user')
 
     def __repr__(self):
         return f'<Пользователь {self.surname} {self.name}>'
 
 
-class Picnic(Base):
+class DbPicnic(Base):
     """
     Пикник
     """
@@ -51,12 +52,13 @@ class Picnic(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
     time = Column(DateTime, nullable=False)
+    picnic_registration = relationship('DbPicnicRegistration', back_populates='picnic')
 
     def __repr__(self):
         return f'<Пикник {self.id}>'
 
 
-class PicnicRegistration(Base):
+class DbPicnicRegistration(Base):
     """
     Регистрация пользователя на пикник
     """
@@ -64,10 +66,9 @@ class PicnicRegistration(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship('DbUser', back_populates='picnic_registration')
     picnic_id = Column(Integer, ForeignKey('picnic.id'), nullable=False)
-
-    user = relationship('User', backref='picnics')
-    picnic = relationship('Picnic', backref='users')
+    picnic = relationship('DbPicnic', back_populates='picnic_registration')
 
     def __repr__(self):
         return f'<Регистрация {self.id}>'

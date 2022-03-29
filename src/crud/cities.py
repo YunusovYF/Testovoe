@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 from sqlalchemy.orm.session import Session
-from src.database.models import City
+from src.database.models import DbCity
 from src.external_requests import CityWeather
 
 
@@ -12,9 +12,9 @@ def create_city(city, db: Session):
     if not check.check_existing(city):
         raise HTTPException(status_code=400, detail='Параметр city должен быть существующим городом')
 
-    city_object = db.query(City).filter(City.name == city.capitalize()).first()
+    city_object = db.query(DbCity).filter(DbCity.name == city.capitalize()).first()
     if city_object is None:
-        city_object = City(name=city.capitalize())
+        city_object = DbCity(name=city.capitalize())
         db.add(city_object)
         db.commit()
 
@@ -22,7 +22,7 @@ def create_city(city, db: Session):
 
 
 def get_all_cities(db: Session):
-    cities = db.query(City).all()
+    cities = db.query(DbCity).all()
     if not cities:
         raise HTTPException(status_code=404, detail=f'В базе данных нет записей о городах')
 
@@ -30,7 +30,7 @@ def get_all_cities(db: Session):
 
 
 def get_cities_by_name(city_name, db: Session):
-    cities = db.query(City).filter(City.name == city_name).all()
+    cities = db.query(DbCity).filter(DbCity.name == city_name).all()
     if not cities:
         raise HTTPException(status_code=404, detail=f'Города {city_name} нет в базе данных')
 
