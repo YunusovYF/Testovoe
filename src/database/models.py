@@ -13,6 +13,7 @@ class DbCity(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
+    picnic = relationship('DbPicnic', back_populates='city')
 
     @property
     def weather(self) -> str:
@@ -51,6 +52,7 @@ class DbPicnic(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
+    city = relationship('DbCity', back_populates='picnic')
     time = Column(DateTime, nullable=False)
     picnic_registration = relationship('DbPicnicRegistration', back_populates='picnic')
 

@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends
 from fastapi import Query
 from sqlalchemy.orm.session import Session
 import datetime as dt
+from typing import List
 
 from src.database.database import get_db
 from src.crud import picnics
-from src.schemas.picnics import PicnicOutSchema
+from src.schemas.picnics import PicnicOutSchema, PicnicRegistrationOutSchema, PicnicRegistrationInSchema
 
 
 router = APIRouter(
@@ -14,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.get('', response_model=PicnicOutSchema)
+@router.get('', response_model=List[PicnicOutSchema])
 def get_all_picnics(db: Session = Depends(get_db)):
     """
     Список всех пикников
@@ -33,9 +34,7 @@ def get_all_picnics(db: Session = Depends(get_db)):
     - **surname** Фамилия
     - **age** возраст
     """
-    picnic = picnics.get_all_picnics(db)
-    print(picnic)
-    return picnic
+    return picnics.get_all_picnics(db)
 
 
 @router.get('/{datetime}/{past}', summary='All Picnics')
@@ -81,10 +80,18 @@ def create_picnic(city_id: int = None, datetime: dt.datetime = None, db: Session
     return picnics.create_picnic(city_id, datetime, db)
 
 
-@router.post('/registration')
-def register_to_picnic(*_, **__,):
+@router.post('/registration', response_model=PicnicRegistrationOutSchema)
+def register_to_picnic(request: PicnicRegistrationInSchema, db: Session = Depends(get_db)):
     """
-    Регистрация пользователя на пикник
-    (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
+    Регистрация пользователей на пикники
+
+    Args:
+    - **user_id** порядковый номер пользователя
+    - **picnic_id** порядковый номер пикника
+
+    Returns:
+    - **id** порядковый номер регистрации
+    - **user_id** порядковый номер пользователя
+    - **picnic_id** порядковый номер пикника
     """
-    return picnics.register_to_picnic(*_, **__,)
+    return picnics.register_to_picnic(db, request)

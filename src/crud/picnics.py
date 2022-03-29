@@ -1,7 +1,9 @@
 import datetime as dt
 from sqlalchemy.orm.session import Session
+from fastapi import HTTPException
 
 from src.database.models import DbCity, DbPicnic, DbPicnicRegistration
+from src.schemas.picnics import PicnicRegistrationInSchema
 
 
 def get_all_picnics(db: Session):
@@ -53,6 +55,17 @@ def create_picnic(city_id, datetime, db: Session):
     }
 
 
-def register_to_picnic(*_, **__,):
-    # TODO: Сделать логику
-    return ...
+def register_to_picnic(db: Session, request: PicnicRegistrationInSchema):
+    user_picnic = db.query(DbPicnicRegistration).filter(DbPicnicRegistration.user_id == request.user_id)\
+        .filter(DbPicnicRegistration.picnic_id == request.picnic_id).first()
+    if user_picnic:
+        raise HTTPException(status_code=400, detail='Пользователь уже зарегистрирован на пикник')
+    new_user_picnic = DbPicnicRegistration(
+        user_id=request.user_id,
+        picnic_id=request.picnic_id
+    )
+    db.add(new_user_picnic)
+    db.commit()
+    db.refresh(new_user_picnic)
+
+    return new_user_picnic
