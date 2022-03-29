@@ -1,5 +1,5 @@
 import datetime as dt
-from fastapi import FastAPI, HTTPException, Query, status
+from fastapi import FastAPI, HTTPException, Query
 from src.database import engine, Session, Base, City, User, Picnic, PicnicRegistration
 from src.external_requests import CheckCityExisting, GetWeatherRequest
 from src.models import RegisterUserRequest, UserModel
@@ -31,10 +31,9 @@ def cities_list(q: str = Query(description="Название города", defa
     Получение списка городов
     """
     if q:
-        cities = Session().query(City).filter(City.name == q).first()
+        cities = Session().query(City).filter(City.name == q).all()
         if not cities:
-            raise HTTPException(status_code=400,
-                                detail=f'Города {q} нет в базе данных')
+            raise HTTPException(status_code=404, detail=f'Города {q} нет в базе данных')
 
     else:
         cities = Session().query(City).all()
@@ -43,11 +42,16 @@ def cities_list(q: str = Query(description="Название города", defa
 
 
 @app.post('/users-list/', summary='')
-def users_list():
+def users_list(age: int = Query(description="Количество лет", default=None)):
     """
     Список пользователей
     """
-    users = Session().query(User).all()
+    if age:
+        users = Session().query(User).filter(User.age == age).all()
+        if not users:
+            raise HTTPException(status_code=404, detail=f'Пользователей {age} лет нет в базе данных')
+    else:
+        users = Session().query(User).all()
     return [{
         'id': user.id,
         'name': user.name,
