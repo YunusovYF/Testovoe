@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 
-from src.database import Session, City
+from src.database.database import Session
+from src.database.models import City
 from src.external_requests import CityWeather
 
 

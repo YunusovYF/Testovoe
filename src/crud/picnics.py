@@ -1,5 +1,6 @@
 import datetime as dt
-from src.database import Session, City, Picnic, PicnicRegistration
+from src.database.database import Session
+from src.database.models import City, Picnic, PicnicRegistration
 
 
 def all_picnics(datetime, past):
