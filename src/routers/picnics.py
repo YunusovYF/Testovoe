@@ -37,7 +37,7 @@ def get_all_picnics(db: Session = Depends(get_db)):
     return picnics.get_all_picnics(db)
 
 
-@router.get('/{datetime}/{past}', summary='All Picnics')
+@router.get('/{datetime}/{past}', response_model=List[PicnicOutSchema])
 def get_picnics_by_date(
         datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
         past: bool = Query(default=True, description='Включая уже прошедшие пикники'),

@@ -2,45 +2,54 @@ import datetime as dt
 from sqlalchemy.orm.session import Session
 from fastapi import HTTPException
 
-from src.database.models import DbCity, DbPicnic, DbPicnicRegistration
-from src.schemas.picnics import PicnicRegistrationInSchema
+from src.database.models import DbCity, DbPicnic, DbPicnicRegistration, DbUser
+from src.schemas.picnics import PicnicRegistrationInSchema, PicnicOutSchema
 
+
+def user_picnic_query(db: Session):
+    return db.query(DbPicnic, DbCity, DbUser) \
+        .outerjoin(DbCity, DbCity.id == DbPicnic.city_id) \
+        .outerjoin(DbPicnicRegistration, DbPicnic.id == DbPicnicRegistration.picnic_id) \
+        .outerjoin(DbUser, DbUser.id == DbPicnicRegistration.user_id)
+
+
+def create_schema(user_picnic):
+    picnics = []
+    users = []
+    for i, el in enumerate(user_picnic):
+        picnic = el[0]
+        city = el[1]
+
+        if i != len(user_picnic)-1 and el[0] == user_picnic[i+1][0]:
+            users.append(el[2])
+
+        else:
+            users.append(el[2])
+            picnic_schema = PicnicOutSchema(id=picnic.id,
+                                            city=city,
+                                            time=picnic.time,
+                                            users=users)
+            picnics.append(picnic_schema)
+            users = []
+
+    return picnics
 
 def get_all_picnics(db: Session):
-    return db.query(DbPicnic).all()
-    # return [{
-    #     'id': pic.id,
-    #     'city': Session().query(City).filter(City.id == pic.id).first().name,
-    #     'time': pic.time,
-    #     'users': [
-    #         {
-    #             'id': pr.user.id,
-    #             'name': pr.user.name,
-    #             'surname': pr.user.surname,
-    #             'age': pr.user.age,
-    #         }
-    #         for pr in Session().query(PicnicRegistration).filter(PicnicRegistration.picnic_id == pic.id)],
-    # } for pic in picnics]
+    user_picnic = user_picnic_query(db).all()
+
+    return create_schema(user_picnic)
 
 
 def get_picnics_by_date(datetime, past, db: Session):
-    picnics = db.query(DbPicnic).filter(DbPicnic.time == datetime)
-    if not past:
-        picnics = picnics.filter(DbPicnic.time >= dt.datetime.now())
 
-    return [{
-        'id': pic.id,
-        'city': db.query(DbCity).filter(DbCity.id == pic.id).first().name,
-        'time': pic.time,
-        'users': [
-            {
-                'id': pr.user.id,
-                'name': pr.user.name,
-                'surname': pr.user.surname,
-                'age': pr.user.age,
-            }
-            for pr in db.query(DbPicnicRegistration).filter(DbPicnicRegistration.picnic_id == pic.id)],
-    } for pic in picnics]
+    user_picnic = user_picnic_query(db)
+
+    user_picnic = user_picnic.filter(DbPicnic.time == datetime)
+    if not past:
+        user_picnic = user_picnic.filter(DbPicnic.time >= dt.datetime.now())
+    user_picnic = user_picnic.all()
+
+    return create_schema(user_picnic)
 
 
 def create_picnic(city_id, datetime, db: Session):

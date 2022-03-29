@@ -8,9 +8,9 @@ from src.schemas.users import UserModel
 
 class PicnicOutSchema(BaseModel):
     id: int
-    city_id: int
     city: CitiesNameSchema
     time: datetime
+    users: List[UserModel]
 
     class Config:
         orm_mode = True
