@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from sqlalchemy.orm.session import Session
 from src.database.models import DbCity
-from src.external_requests import CityWeather
+from src.services.external_requests import CityWeather
 
 
 def create_city(city, db: Session):

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
-from src.external_requests import CityWeather
+from src.services.external_requests import CityWeather
 from src.database.database import Base
 
 
