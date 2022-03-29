@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.routes import cities, users, picnics
+from src.routers import cities, users, picnics
 
 router = APIRouter()
 

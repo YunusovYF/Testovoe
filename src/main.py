@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.routes import all
+from src.routers import all
 from src.database.models import Base
 from src.database.database import engine
 
