@@ -1,5 +1,5 @@
 import datetime as dt
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, status
 from src.database import engine, Session, Base, City, User, Picnic, PicnicRegistration
 from src.external_requests import CheckCityExisting, GetWeatherRequest
 from src.models import RegisterUserRequest, UserModel
@@ -30,7 +30,14 @@ def cities_list(q: str = Query(description="Название города", defa
     """
     Получение списка городов
     """
-    cities = Session().query(City).all()
+    if q:
+        cities = Session().query(City).filter(City.name == q).first()
+        if not cities:
+            raise HTTPException(status_code=400,
+                                detail=f'Города {q} нет в базе данных')
+
+    else:
+        cities = Session().query(City).all()
 
     return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
 
@@ -111,4 +118,3 @@ def register_to_picnic(*_, **__,):
     """
     # TODO: Сделать логику
     return ...
-
