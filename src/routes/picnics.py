@@ -6,12 +6,12 @@ from src.crud import picnics
 
 
 router = APIRouter(
-    prefix='/cities',
-    tags=['Cities']
+    prefix='/picnics',
+    tags=['Picnics']
 )
 
 
-@router.get('/all-picnics/', summary='All Picnics', tags=['picnic'])
+@router.get('/all-picnics/', summary='All Picnics')
 def all_picnics(datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
                 past: bool = Query(default=True, description='Включая уже прошедшие пикники')):
     """
@@ -20,13 +20,12 @@ def all_picnics(datetime: dt.datetime = Query(default=None, description='Вре�
     return picnics.all_picnics(datetime, past)
 
 
-@router.get('/picnic-add/', summary='Picnic Add', tags=['picnic'])
+@router.get('/picnic-add/', summary='Picnic Add')
 def picnic_add(city_id: int = None, datetime: dt.datetime = None):
     return picnics.picnic_add(city_id, datetime)
 
 
-
-@router.get('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
+@router.get('/picnic-register/', summary='Picnic Registration')
 def register_to_picnic(*_, **__,):
     """
     Регистрация пользователя на пикник

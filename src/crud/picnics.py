@@ -37,6 +37,6 @@ def picnic_add(city_id, datetime):
     }
 
 
-def reg_picnic(*_, **__,):
+def register_to_picnic(*_, **__,):
     # TODO: Сделать логику
     return ...
